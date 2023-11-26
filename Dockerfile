@@ -1,4 +1,4 @@
-FROM registry.fedoraproject.org/fedora-minimal:37 as build
+FROM registry.fedoraproject.org/fedora-minimal:latest as build
 WORKDIR /go/src/gitlab.com/simonkrenger/obloc-exporter
 COPY . .
 RUN microdnf install -y golang git && go get
