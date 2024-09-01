@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/prometheus/client_golang/prometheus"
@@ -36,7 +37,7 @@ func recordMetrics() {
 				resp.Body.Close()
 			}
 			resp.Body.Close()
-			i, err := strconv.Atoi(string(body))
+			i, err := strconv.Atoi(strings.ReplaceAll(string(body), "\"", ""))
 			if err != nil {
 				fmt.Println(fmt.Errorf(err.Error()))
 			}
