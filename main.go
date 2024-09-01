@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 	"strconv"
 	"time"
-	"os"
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
@@ -19,7 +19,7 @@ var (
 		Help: "The current O'Bloc utilization",
 	})
 
-	fetchUrl = "https://obloc.ch/cms/wp-content/plugins/guestcounter/utilization.php"
+	fetchUrl = "https://obloc.ch/_cmsbox_backends_/obloc/guestcounter/"
 )
 
 func recordMetrics() {
@@ -28,17 +28,17 @@ func recordMetrics() {
 		for {
 			resp, err := http.Get(fetchUrl)
 			if err != nil {
-				fmt.Errorf(err.Error())
+				fmt.Println(fmt.Errorf(err.Error()))
 			}
 			body, err := io.ReadAll(resp.Body)
 			if err != nil {
-				fmt.Errorf(err.Error())
+				fmt.Println(fmt.Errorf(err.Error()))
 				resp.Body.Close()
 			}
 			resp.Body.Close()
 			i, err := strconv.Atoi(string(body))
 			if err != nil {
-				fmt.Errorf(err.Error())
+				fmt.Println(fmt.Errorf(err.Error()))
 			}
 			fmt.Println(i)
 
@@ -54,7 +54,7 @@ func main() {
 	val, present := os.LookupEnv("FETCH_URL")
 	if present {
 		fetchUrl = val
-        }
+	}
 
 	// Start actual gathering
 	recordMetrics()
@@ -63,4 +63,3 @@ func main() {
 	http.Handle("/metrics", promhttp.Handler())
 	http.ListenAndServe(":8081", nil)
 }
-
