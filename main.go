@@ -24,28 +24,31 @@ var (
 )
 
 func recordMetrics() {
-	// Record metrics every 5 minutes
 	go func() {
+		fmt.Println("recordMetrics goroutine started.")
 		for {
+			// Fixed to 5 minutes
+			time.Sleep(300 * time.Second)
+
 			resp, err := http.Get(fetchUrl)
 			if err != nil {
-				fmt.Println(fmt.Errorf(err.Error()))
+				fmt.Println(err.Error())
+				continue
 			}
 			body, err := io.ReadAll(resp.Body)
 			if err != nil {
-				fmt.Println(fmt.Errorf(err.Error()))
+				fmt.Println(err.Error())
 				resp.Body.Close()
+				continue
 			}
 			resp.Body.Close()
 			i, err := strconv.Atoi(strings.ReplaceAll(string(body), "\"", ""))
 			if err != nil {
-				fmt.Println(fmt.Errorf(err.Error()))
+				fmt.Println(err.Error())
+				continue
 			}
 			fmt.Println(i)
-
 			oblocUtilization.Set(float64(i))
-			// Fixed to 5 minutes
-			time.Sleep(300 * time.Second)
 		}
 	}()
 }
